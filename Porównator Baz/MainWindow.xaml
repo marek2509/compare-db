@@ -7,6 +7,20 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <TabControl>
+            <TabItem Header="Usinięte jednostki">
+                <TextBox x:Name="deletedUnit" VerticalScrollBarVisibility="Visible" />
+            </TabItem>
+                
+            <TabItem Header="Dodane jednostki">
+                <TextBox x:Name="addedUnit" VerticalScrollBarVisibility="Visible"/>
+            </TabItem>
+            
+            <TabItem Header="Różnice - działki">
+                <TextBox x:Name="differenceDzialki" VerticalScrollBarVisibility="Visible"/>
+            </TabItem>
+            <TabItem Header="Różnice - właściciele"></TabItem>
+        </TabControl>
         
     </Grid>
 </Window>
