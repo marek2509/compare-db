@@ -1,20 +1,12 @@
-﻿using Porównator_Baz.Entities;
+﻿using Microsoft.Win32;
+using Porównator_Baz.Entities;
+using Porównator_Baz.Middleware;
 using Porównator_Baz.Services;
 using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Text;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Porównator_Baz
 {
@@ -26,50 +18,132 @@ namespace Porównator_Baz
         public MainWindow()
         {
             InitializeComponent();
+            textBoxPathBase1.Text = Properties.Settings.Default.PathBase1;
+            textBoxPathBase2.Text = Properties.Settings.Default.PathBase2;
+            textBoxLogin.Text = Properties.Settings.Default.Login;
+            textBoxPassword.Password = Properties.Settings.Default.Password;
+        }
+        JednRejService jednRejService = null;
 
-            //using (MainDbContext dbContext = new MainDbContext(@"D:\Bazy\Scalenia\Milejczyce porównanie przed po\MILEJCZYCE 2021.FDB"))
-            //{
-            //    var jedn = dbContext.Jedn_Rejs.FirstOrDefault(x => x.IJR == 1);
-            //    Console.WriteLine(jedn.IJR + " <> " + jedn.Dzialki.First().IDD);
-            //    var podmiot = jedn.Udzialy.FirstOrDefault().Podmiot;
-            //    if (podmiot.TYP == "P")
-            //    {
-            //        var intytucja = podmiot.Instytucja;
-            //        Console.WriteLine("INSTYTUCJA>" + intytucja.NPE);
-            //    }
+        private void ButtonPathName1_Click(object sender, RoutedEventArgs e)
+        {
+            var path = PathFromDialog.GetPath();
+            textBoxPathBase1.Text = path;
+            Properties.Settings.Default.PathBase1 = path;
+            Properties.Settings.Default.Save();
+        }
 
-            //    var fiz = dbContext.Jedn_Rejs.FirstOrDefault(x => x.IJR == 15);
-            //    var podm2 = fiz.Udzialy.FirstOrDefault().Podmiot;
-            //    if (podm2.TYP == "F")
-            //    {
-            //        var osoba = podm2.OsobaFizyczna;
-            //        Console.WriteLine("OSOBA>" + osoba.NZW + " " + osoba.PIM);
-            //    }
+        private void ButtonPathName2_Click(object sender, RoutedEventArgs e)
+        {
+            var path = PathFromDialog.GetPath();
+            textBoxPathBase2.Text = path;
+            Properties.Settings.Default.PathBase2 = path;
+            Properties.Settings.Default.Save();
+        }
 
-            //    var malz = dbContext.Jedn_Rejs.FirstOrDefault(x => x.IJR == 58);
-            //    var podm3 = malz.Udzialy.FirstOrDefault().Podmiot;
-            //    if (podm3.TYP == "M")
-            //    {
-            //        var osoba = podm3.Malzenstwo;
-            //        Console.WriteLine("MALZENSTWO>" + osoba.Maz.NZW + " " + osoba.Maz.PIM + " " + osoba.Zona.PIM);
-            //    }
-            //}
+        private void TextBoxLogin_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
 
-            //MainDbContext dbContextWrobel = new MainDbContext(@"D:\Bazy\Scalenia\Debitka wyk gr otrzym\DEBITKA_09_06_2021.FDB");
+            Properties.Settings.Default.Login = textBoxLogin.Text;
+            Properties.Settings.Default.Save();
+        }
 
-            //var jedn2 = dbContextWrobel.Jedn_Rejs.FirstOrDefault(x => x.IJR == 1000);
+        private void TextBoxPassword_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.Password = textBoxPassword.Password;
+            Properties.Settings.Default.Save();
+        }
+        bool infinity;
+        private async void ButtonEqualBase_Click(object sender, RoutedEventArgs e)
+        {
+            checkBoxIgnoreKW.IsEnabled = false;
+            checkBoxIgnoreParcelsArea.IsEnabled = false;
+            infinity = true;
+            LoadingLabel();
 
-            //Console.WriteLine("Inny>" + jedn2.Udzialy.FirstOrDefault(x => x.Podmiot.TYP == "I").Podmiot.InnyPodmiot.NPE);
+            MainDbContext dbContextOld = new MainDbContext(Properties.Settings.Default.PathBase1);
+            MainDbContext dbContextNew = new MainDbContext(Properties.Settings.Default.PathBase2);
+
+            try
+            {
+                jednRejService = await Task.Run(() => new JednRejService(dbContextOld, dbContextNew));
+            }
+            catch(Exception ex)
+            {
+                infinity = false;
+                return;
+            }
 
 
-            MainDbContext dbContextOld = new MainDbContext(@"D:\Bazy\Scalenia\Milejczyce porównanie przed po\MILEJCZYCE 2021.FDB");
-            MainDbContext dbContextNew = new MainDbContext(@"D:\Bazy\Scalenia\Milejczyce porównanie przed po\MILEJCZYCE 2022.FDB");
+            var resultAddedUnit = await Task.Run(() => jednRejService?.GetAddedUnits());
+            addedUnit.Text = resultAddedUnit;
 
-            JednRejService jednRejService = new JednRejService(dbContextOld, dbContextNew);
+            var resultDeletedUnit = await Task.Run(() => jednRejService?.GetRemovedUnits());
+            deletedUnit.Text = resultDeletedUnit;
 
-            addedUnit.Text = jednRejService.GetAddedJednostki();
-            deletedUnit.Text = jednRejService.GetRemovedJednostki();
-            differenceDzialki.Text = jednRejService.GetDifferencesDzialki();
+            var resultDifferencesOwner = await Task.Run(() => jednRejService?.GetDifferencesOwner());
+            differenceOwner.Text = resultDifferencesOwner;
+
+            var ignorArea = (bool)checkBoxIgnoreParcelsArea.IsChecked;
+            var ignoreKW = (bool)checkBoxIgnoreKW.IsChecked;
+            var resultDifferencesParcels = await Task.Run(() => jednRejService?.GetDifferencesParecels(ignorArea, ignoreKW));
+            differenceParcels.Text = resultDifferencesParcels;
+
+            infinity = false;
+            checkBoxIgnoreKW.IsEnabled = true;
+            checkBoxIgnoreParcelsArea.IsEnabled = true;
+        }
+
+        public async Task LoadingLabel()
+        {
+            loadPanel.Visibility = Visibility.Visible;
+            mainTabControl.IsEnabled = false;
+            while (infinity)
+            {
+                labelLoad.Dispatcher.Invoke(() => rotateLodingCircle.Angle += 2);
+                await Task.Delay(1);
+            }
+
+
+            if (!infinity)
+            {
+                mainTabControl.IsEnabled = true;
+                loadPanel.Visibility = Visibility.Hidden;
+            }
+        }
+
+
+        async void RefreshTabParcels()
+        {
+            infinity = true;
+            LoadingLabel();
+            var ignorArea = (bool)checkBoxIgnoreParcelsArea.IsChecked;
+            var ignoreKW = (bool)checkBoxIgnoreKW.IsChecked;
+            var resultDifferencesParcels = await Task.Run(() => jednRejService.GetDifferencesParecels(ignorArea, ignoreKW));
+            differenceParcels.Text = resultDifferencesParcels;
+
+            infinity = false;
+        }
+
+
+        private void CheckBoxIgnoreKW_Checked(object sender, RoutedEventArgs e)
+        {
+            RefreshTabParcels();
+        }
+
+        private void CheckBoxIgnoreParcelsArea_Checked(object sender, RoutedEventArgs e)
+        {
+            RefreshTabParcels();
+        }
+
+        private void CheckBoxIgnoreKW_Unchecked(object sender, RoutedEventArgs e)
+        {
+            RefreshTabParcels();
+        }
+
+        private void CheckBoxIgnoreParcelsArea_Unchecked(object sender, RoutedEventArgs e)
+        {
+            RefreshTabParcels();
         }
     }
 }

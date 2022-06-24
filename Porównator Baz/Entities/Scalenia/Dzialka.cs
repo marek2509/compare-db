@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Porównator_Baz.Entities.Interface;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 namespace Porównator_Baz.Entities
 {
     [Table("DZIALKA")]
-    public class Dzialka
+    public class Dzialka : IDzialka
     {
         [Key]
         public int ID_ID { get; set; }
@@ -20,10 +21,9 @@ namespace Porównator_Baz.Entities
 
         [ForeignKey("Obreb")]
         public int IDOBR { get; set; }
-        public virtual Obreby Obreb { get; set; }
-
+        public Obreby Obreb { get; set; } 
         [ForeignKey("Jedn_rej")]
         public int RJDR { get; set; }
-        public virtual Jedn_rej Jedn_rej { get; set; }
+        public Jedn_rej Jedn_rej { get; set; }
     }
 }

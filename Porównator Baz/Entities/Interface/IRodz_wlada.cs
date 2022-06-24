@@ -6,13 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Porównator_Baz.Entities
+namespace Porównator_Baz.Entities.Interface
 {
-    [Table("RODZ_WLADA")]
-    public class Rodz_wlada
+    public interface IRodz_wlada
     {
-        [Key]
-        public int ID_ID { get; set; }
-        public string SYMBOL { get; set; }
+        int ID_ID { get; set; }
+        string SYMBOL { get; set; }
     }
 }

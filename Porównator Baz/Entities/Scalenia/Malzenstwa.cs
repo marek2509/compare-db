@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Porównator_Baz.Entities.Interface;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Porównator_Baz.Entities
 {
     [Table("MALZENSTWA")]
-    public class Malzenstwa
+    public class Malzenstwa : IMalzenstwa
     {
         [Key]
         public int ID_ID { get; set; }
@@ -17,6 +18,6 @@ namespace Porównator_Baz.Entities
         [ForeignKey("Zona")]
         [Column("ZONA")]
         public int ID_ZONA { get; set; }
-        public virtual Osoby Zona { get; set; }
+        public virtual Osoby Zona {get; set;}
     }
 }

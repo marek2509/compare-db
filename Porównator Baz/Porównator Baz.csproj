@@ -71,13 +71,26 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Entities\Rodz_wlada.cs" />
-    <Compile Include="Models\DzialkiDto.cs" />
-    <Compile Include="Models\JednRejDto.cs" />
-    <Compile Include="Models\PodmiotDto.cs" />
-    <Compile Include="Services\DzialkiService.cs" />
+    <Compile Include="Entities\Interface\IDzialka.cs" />
+    <Compile Include="Entities\Interface\IInnePodmioty.cs" />
+    <Compile Include="Entities\Interface\IInstytucje.cs" />
+    <Compile Include="Entities\Interface\IJedn_rej.cs" />
+    <Compile Include="Entities\Interface\IMalzenstwa.cs" />
+    <Compile Include="Entities\Interface\IObreby.cs" />
+    <Compile Include="Entities\Interface\IOsoby.cs" />
+    <Compile Include="Entities\Interface\IPodmioty.cs" />
+    <Compile Include="Entities\Interface\IRodz_wlada.cs" />
+    <Compile Include="Entities\Interface\IUdzialy.cs" />
+    <Compile Include="Entities\Scalenia\Rodz_wlada.cs" />
+    <Compile Include="Middleware\ConnectionDataBaseException.cs" />
+    <Compile Include="Middleware\ConnectionString.cs" />
+    <Compile Include="Middleware\ParcelEqualityComparer.cs" />
+    <Compile Include="Middleware\PathFromDialog.cs" />
+    <Compile Include="Models\ParcelsDto.cs" />
+    <Compile Include="Models\RegisterUnitDto.cs" />
+    <Compile Include="Models\OwnerDto.cs" />
+    <Compile Include="Services\EJednRejService.cs" />
     <Compile Include="Services\JednRejService.cs" />
-    <Compile Include="Services\WlasnoscService.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -86,16 +99,16 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Entities\Dzialka.cs" />
-    <Compile Include="Entities\InnePodmioty.cs" />
-    <Compile Include="Entities\Instytucje.cs" />
-    <Compile Include="Entities\Jedn_rej.cs" />
-    <Compile Include="Entities\MainDbContext.cs" />
-    <Compile Include="Entities\Malzenstwa.cs" />
-    <Compile Include="Entities\Obreby.cs" />
-    <Compile Include="Entities\Osoby.cs" />
-    <Compile Include="Entities\Podmioty.cs" />
-    <Compile Include="Entities\Udzialy.cs" />
+    <Compile Include="Entities\Scalenia\Dzialka.cs" />
+    <Compile Include="Entities\Scalenia\InnePodmioty.cs" />
+    <Compile Include="Entities\Scalenia\Instytucje.cs" />
+    <Compile Include="Entities\Scalenia\Jedn_rej.cs" />
+    <Compile Include="Entities\Scalenia\MainDbContext.cs" />
+    <Compile Include="Entities\Scalenia\Malzenstwa.cs" />
+    <Compile Include="Entities\Scalenia\Obreby.cs" />
+    <Compile Include="Entities\Scalenia\Osoby.cs" />
+    <Compile Include="Entities\Scalenia\Podmioty.cs" />
+    <Compile Include="Entities\Scalenia\Udzialy.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -109,6 +122,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -118,6 +132,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -128,7 +143,12 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\loading.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\copyTo.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

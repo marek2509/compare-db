@@ -1,14 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using Porównator_Baz.Entities.Interface;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Porównator_Baz.Entities
 {
     [Table("JEDN_REJ")]
-    public class Jedn_rej
+    public class Jedn_rej : IJedn_rej
     {
         [Key]
-        public int ID_ID { get; set; }
+        [Column("ID_ID")]
+        virtual public int ID { get; set; }
         public int IJR { get; set; }
 
         [ForeignKey("Obreb")]

@@ -5,22 +5,122 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Porównator_Baz"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Porównanie baz - inż. Marek Wojciechowicz" Height="450" Width="800">
     <Grid>
-        <TabControl>
-            <TabItem Header="Usinięte jednostki">
-                <TextBox x:Name="deletedUnit" VerticalScrollBarVisibility="Visible" />
+        <TabControl x:Name="mainTabControl" >
+
+            <TabItem Header="Opcje">
+                <StackPanel>
+                    <Label>Ścieżka do bazy 1 (archiwalna):</Label>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="40"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="textBoxPathBase1"></TextBox>
+                        <Button x:Name="buttonPathName1" Grid.Column="1" Click="ButtonPathName1_Click">></Button>
+                    </Grid>
+                    <Label>Ścieżka do bazy 2 (aktualna):</Label>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="40"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="textBoxPathBase2"></TextBox>
+                        <Button x:Name="buttonPathName2" Grid.Column="1" Click="ButtonPathName2_Click">></Button>
+                    </Grid>
+
+                    <Separator Margin="0,10" Height="10" Background="Black"/>
+                    <StackPanel Width="300" HorizontalAlignment="Left">
+                        <Label Margin="0,0,0,10" >Dane do logowania</Label>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="50"></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label>Login:</Label>
+                            <TextBox TextChanged="TextBoxLogin_TextChanged" Grid.Column="1" x:Name="textBoxLogin"></TextBox>
+                        </Grid>
+                        <Grid Margin="0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="50"></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label>Hasło:</Label>
+                            <PasswordBox PasswordChanged="TextBoxPassword_PasswordChanged" Grid.Column="1" x:Name="textBoxPassword" PasswordChar="☢"></PasswordBox>
+                        </Grid>
+                    </StackPanel>
+                    <Separator Margin="0,10" Height="10" Background="Black"/>
+                    <Button Width="200" Height="50" x:Name="buttonEqualBase" Click="ButtonEqualBase_Click">Porównaj bazy >>></Button>
+                </StackPanel>
             </TabItem>
-                
-            <TabItem Header="Dodane jednostki">
+
+            <TabItem Header="Usunięte jednostki" x:Name="tabDeletedUnit">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="80"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.ColumnSpan="2" Grid.RowSpan="2" x:Name="deletedUnit" VerticalScrollBarVisibility="Visible" />
+                    <Button Grid.Column="1" Grid.Row="1" Width="30" Height="30" Background="Transparent" BorderBrush="Transparent">
+                        <Image Source="./Resources/copyTo.png"/>
+                    </Button>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Dodane jednostki" x:Name="tabAddeddUnit">
                 <TextBox x:Name="addedUnit" VerticalScrollBarVisibility="Visible"/>
             </TabItem>
-            
-            <TabItem Header="Różnice - działki">
-                <TextBox x:Name="differenceDzialki" VerticalScrollBarVisibility="Visible"/>
+
+            <TabItem Header="Różnice - działki" x:Name="tabDifferencesParcels">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <DockPanel  Grid.Row="0">
+
+                        <Label  VerticalContentAlignment="Center" >Podczas porównania ignoruj:</Label>
+                        <CheckBox IsEnabled="False" IsChecked="False" x:Name="checkBoxIgnoreKW"  Grid.Row="0" Margin="20, 0" VerticalContentAlignment="Center" Unchecked="CheckBoxIgnoreKW_Unchecked" Checked="CheckBoxIgnoreKW_Checked">KW</CheckBox>
+                        <CheckBox IsEnabled="False" IsChecked="False" x:Name="checkBoxIgnoreParcelsArea" VerticalContentAlignment="Center" Unchecked="CheckBoxIgnoreParcelsArea_Unchecked" Checked="CheckBoxIgnoreParcelsArea_Checked">Powierzchnie działek</CheckBox>
+                    </DockPanel>
+                    <TextBox  Grid.Row="1"  x:Name="differenceParcels" VerticalScrollBarVisibility="Visible"/>
+                </Grid>
             </TabItem>
-            <TabItem Header="Różnice - właściciele"></TabItem>
+
+            <TabItem Header="Różnice - właściciele" x:Name="tabDifferencesOwner">
+                <TextBox x:Name="differenceOwner" VerticalScrollBarVisibility="Visible"/>
+            </TabItem>
+
         </TabControl>
-        
+        <Border Visibility="Hidden" x:Name="loadPanel" CornerRadius="6"
+                BorderBrush="Gray"
+                Background="LightGray"
+                BorderThickness="2"
+                Padding="8" Width="200" Height="100">
+            <DockPanel  HorizontalAlignment="Center" VerticalAlignment="Center"  Background="LightGray" >
+
+                <Label  x:Name="labelLoad"
+               HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="20"
+              Content="ładowanie"></Label>
+                <StackPanel RenderTransformOrigin="0.5,0.5" Width="30" Height="30" >
+                    <StackPanel.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform/>
+                            <RotateTransform x:Name="rotateLodingCircle" Angle="0"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </StackPanel.RenderTransform>
+                    <Image Source="./Resources/loading.png" Height="30" Width="30" Opacity=".7"/>
+
+                </StackPanel>
+            </DockPanel>
+        </Border>
     </Grid>
+
 </Window>

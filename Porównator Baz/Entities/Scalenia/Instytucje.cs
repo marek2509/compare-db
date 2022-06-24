@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Porównator_Baz.Entities.Interface;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Porównator_Baz.Entities
 {
     [Table("INSTYTUCJE")]
-    public class Instytucje
+    public class Instytucje : IInstytucje
     {
         [Key]
         public int ID_ID { get; set; }

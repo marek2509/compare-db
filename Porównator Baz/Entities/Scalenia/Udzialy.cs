@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Porównator_Baz.Entities.Interface;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 namespace Porównator_Baz.Entities
 {
     [Table("UDZIALY")]
-    public class Udzialy
+    public class Udzialy: IUdzialy
     {
         [Key]
         public int ID_ID { get; set; }

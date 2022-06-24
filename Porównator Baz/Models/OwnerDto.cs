@@ -1,4 +1,5 @@
 ﻿using Porównator_Baz.Entities;
+using Porównator_Baz.Entities.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,15 +8,16 @@ using System.Threading.Tasks;
 
 namespace Porównator_Baz.Models
 {
-    public class PodmiotDto
+    public class OwnerDto : IEquatable<OwnerDto>
     {
         public double UdzialNr { get; set; }
         public string Udzial { get; set; }
         public string Nazwa { get; set; }
         public string RWD { get; set; }
 
-        public PodmiotDto(Udzialy udzial)
+        public OwnerDto(IUdzialy udzialy)
         {
+            var udzial = udzialy as Udzialy;
             Udzial = udzial.UD;
             UdzialNr = udzial.UD_NR;
             RWD = udzial.RodzajWladania.SYMBOL;
@@ -49,6 +51,24 @@ namespace Porównator_Baz.Models
                 var innyPodmiot = udzial.Podmiot.InnyPodmiot;
                 Nazwa = innyPodmiot.NPE;
             }
+        }
+
+        public bool Equals(OwnerDto owner)
+        {
+            if (owner is null)
+                return false;
+
+            return Udzial == owner.Udzial &&
+                   UdzialNr == owner.UdzialNr &&
+                   Nazwa == owner.Nazwa &&
+                   RWD == owner.RWD;
+        }
+
+        public override bool Equals(object obj) => Equals(obj as OwnerDto);
+
+        public string GetAllAboutOwner()
+        {
+            return $"\t\t{RWD}\t{Udzial}\t{Nazwa}";
         }
     }
 }
