@@ -109,19 +109,6 @@ namespace Porównator_Baz.Services
         return sb.ToString();
     }
 
-    //public string GetAllDifferences()
-    //{
-    //    StringBuilder stringBuilder = new StringBuilder();
-
-    //    stringBuilder.AppendLine("Usunięte jednostki.");
-    //    stringBuilder.AppendLine(GetRemovedJednostki());
-
-    //    stringBuilder.AppendLine("Dodane jednostki.");
-    //    stringBuilder.AppendLine(GetAddedJednostki());
-
-    //    return stringBuilder.ToString();
-    //}
-
 
     public string GetDifferencesParecels(bool ignoreArea = false, bool ignoreKW = false)
     {
