@@ -59,34 +59,11 @@ namespace Porównator_Baz.Services
             }
             else
             {
-                // If x is not null...
-                //
+
                 if (y == null)
-                // ...and y is null, x is greater.
                 {
                     return 1;
                 }
-                else
-                {
-                    // ...and y is not null, compare the
-                    // lengths of the two strings.
-                    //
-                    //if (x.ObrebNr < y.ObrebNr)
-                    //{
-                    //    return 1;
-                    //}
-                    //else if (x.ObrebNr == y.ObrebNr)
-                    //{
-                    //    if (x.Ijr < y.Ijr)
-                    //    {
-                    //        return 1;
-                    //    }
-                    //    else if (x.Ijr > y.Ijr)
-                    //    {
-                    //        return -1;
-                    //    }
-                    //    return 0;
-                    //}
 
                     var equalObr = x.ObrebNazwa.CompareTo(y.ObrebNazwa);
 
@@ -99,9 +76,6 @@ namespace Porównator_Baz.Services
                     }
                     else
                     {
-                        // If the strings are of equal length,
-                        // sort them with ordinary string comparison.
-                        //
                         return x.Ijr.CompareTo(y.Ijr);
                     }
                 }
