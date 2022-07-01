@@ -1,4 +1,5 @@
-﻿using Porównator_Baz.Entities;
+﻿using Newtonsoft.Json;
+using Porównator_Baz.Entities;
 using Porównator_Baz.Middleware;
 using Porównator_Baz.Models;
 using System;
@@ -107,13 +108,14 @@ namespace Porównator_Baz.Services
         {
 
 
-            var query = jednRejDtoFirst.SelectMany(jedn => jedn.Dzialki, (jedn, dzialka) => new
-            {
-                Ijr = jedn.Ijr,
-                Dzialka = string.Join("-", dzialka.NrObrebu, dzialka.Idd),
+            //var query = jednRejDtoFirst.SelectMany(jedn => jedn.Dzialki, (jedn, dzialka) => new
+            //{
+            //    Ijr = jedn.Ijr,
+            //    Dzialka = string.Join("-", dzialka.NrObrebu, dzialka.Idd),
 
-            });
-            Microsoft.Json.
+            //});
+            //Console.WriteLine(string.Join(",", query));
+            //Console.WriteLine(JsonConvert.SerializeObject(jednRejDtoFirst));
 
             StringBuilder sb = new StringBuilder();
             ParcelEqualityComparer parcComp = new ParcelEqualityComparer(ignoreKW, ignoreArea);
