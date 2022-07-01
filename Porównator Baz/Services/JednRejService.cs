@@ -107,6 +107,14 @@ namespace Porównator_Baz.Services
         {
 
 
+            var query = jednRejDtoFirst.SelectMany(jedn => jedn.Dzialki, (jedn, dzialka) => new
+            {
+                Ijr = jedn.Ijr,
+                Dzialka = string.Join("-", dzialka.NrObrebu, dzialka.Idd),
+
+            });
+            Microsoft.Json.
+
             StringBuilder sb = new StringBuilder();
             ParcelEqualityComparer parcComp = new ParcelEqualityComparer(ignoreKW, ignoreArea);
             foreach (var dtoFirst in jednRejDtoFirst)
@@ -116,135 +124,79 @@ namespace Porównator_Baz.Services
                 {
                     // select all parcels from selected unit
                     var dzialkiSecond = jednRejDtoSecond.SingleOrDefault(jednSec => dtoFirst.Equals(jednSec)).Dzialki;
+                    var dzialkiFirst = dtoFirst.Dzialki;
 
-                    dtoFirst.Dzialki.SequenceEqual(dzialkiSecond, parcComp);
-
-                    if (dtoFirst.Dzialki.SequenceEqual(dzialkiSecond, parcComp))
+                    if (dzialkiFirst.SequenceEqual(dzialkiSecond, parcComp))
                     {
                         continue;
                     }
-                    else
-                    if (dtoFirst.Dzialki.SequenceEqual(dzialkiSecond))
-                    {
-                        continue;
-                    }
+             
 
+                    //var maxLengthDz = dzialkiFirst.Max(d => (d.NrObrebu + d.Idd).Length);
+                    //var maxLengthPew = dzialkiFirst.Max(d => d.Pew.ToString().Length);
 
+                    //var maxLengthDzSec = dzialkiSecond.Max(d => (d.NrObrebu + d.Idd).Length);
+                    //var maxLengthPewSec = dzialkiSecond.Max(d => d.Pew.ToString().Length);
+
+                    //sb.AppendLine("\tBAZA 1:");
+                    //dzialkiFirst.ForEach(x => sb.AppendLine(x.GetAllDataAboutDzialka(maxLengthKw)));
+                    //sb.AppendLine("\n\tBAZA 2:");
+                    //dzialkiSecond.ForEach(x => sb.AppendLine(x.GetAllDataAboutDzialka(maxLengthKwSec)));
 
                     sb.AppendLine("________________________________________________________________________________________________________________\n");
                     sb.AppendLine($"{dtoFirst.ObrebNr}-{dtoFirst.Ijr}\t{dtoFirst.ObrebNazwa}");
-                    var dzialkiFirst = dtoFirst.Dzialki;
                     var maxLengthKw = dzialkiFirst.Max(d => d.Kw.Length);
-                    var maxLengthDz = dzialkiFirst.Max(d => (d.NrObrebu + d.Idd).Length);
-                    var maxLengthPew = dzialkiFirst.Max(d => d.Pew.ToString().Length);
-
                     var maxLengthKwSec = dzialkiSecond.Max(d => d.Kw.Length);
-                    var maxLengthDzSec = dzialkiSecond.Max(d => (d.NrObrebu + d.Idd).Length);
-                    var maxLengthPewSec = dzialkiSecond.Max(d => d.Pew.ToString().Length);
-
-                    sb.AppendLine("\tBAZA 1:");
-                    dzialkiFirst.ForEach(x => sb.AppendLine(x.GetAllDataAboutDzialka(maxLengthKw, maxLengthDz, maxLengthPew)));
-                    sb.AppendLine("\n\tBAZA 2:");
-                    dzialkiSecond.ForEach(x => sb.AppendLine(x.GetAllDataAboutDzialka(maxLengthKwSec, maxLengthDzSec, maxLengthPewSec)));
-
                     var countFirst = dzialkiFirst.Count();
                     var countSecond = dzialkiSecond.Count();
 
-                    var countRowsInReport = countFirst > countSecond ? countFirst : countSecond;
+                    List<ParcelsDto> newParcelsList = new List<ParcelsDto>();
+                    newParcelsList.AddRange(dzialkiFirst);
+                    newParcelsList.AddRange(dzialkiSecond);
+
+                    var countRowsInReport = newParcelsList.Select(x => x.NrObrebu + "-" + x.Idd).Distinct().ToList().Count;
 
                     int indexFirstParcels = 0;
                     int indexSecondParcels = 0;
 
-                    var maxLengthFirst = dzialkiFirst.Max(d => d.GetAllDataAboutDzialka(maxLengthKw, maxLengthDz, maxLengthPew).Length);
-                    var maxLengthSecond = dzialkiSecond.Max(d => d.GetAllDataAboutDzialka(maxLengthKwSec, maxLengthDzSec, maxLengthPewSec).Length);
+                    var maxLengthFirst = dzialkiFirst.Max(d => d.GetAllDataAboutDzialka(maxLengthKw).Length);
+                    var maxLengthSecond = dzialkiSecond.Max(d => d.GetAllDataAboutDzialka(maxLengthKwSec).Length);
 
 
                     sb.AppendLine($"BAZA 1:" + "\t" + "BAZA2:".PadLeft(maxLengthFirst));
                     for (int i = 0; i < countRowsInReport; i++)
                     {
+                        var resultComparison = indexFirstParcels < countFirst && indexSecondParcels < countSecond ? dzialkiFirst[indexFirstParcels].Sidd.CompareTo(dzialkiSecond[indexSecondParcels].Sidd) : -5;
 
 
-                        void genSecond()
+                        if (indexFirstParcels >= countFirst || resultComparison == 1)
                         {
-                            //sb.AppendLine("".PadLeft(maxLengthFirst + maxLengthSecond) + $"\t\t\t{dzialkiSecond[indexSecondParcels].GetAllDataAboutDzialka(maxLengthKwSec, maxLengthDzSec, maxLengthPewSec)}");
-                            //sb.AppendLine("".PadRight(maxLengthFirst + maxLengthSecond) + $"\t\t\t{dzialkiSecond[indexSecondParcels].GetAllDataAboutDzialka(maxLengthKwSec, maxLengthDzSec, maxLengthPewSec)}");
-
-                            string strDz = "";
-
-                            for (int j = 0; j < 15; j++)
-                            {
-                                strDz += " ";
-                            }
-                            strDz += "\t";
-                            for (int k = 0; k < 15; k++)
-                            {
-                                strDz += " ";
-                            }
-                            strDz += "\t";
-                            for (int l = 0; l < maxLengthKwSec; l++)
-                            {
-                                strDz += " ";
-                            }
-
-                            sb.AppendLine(strDz + "\t\t\t" + dzialkiSecond[indexSecondParcels].GetAllDataAboutDzialka(maxLengthKwSec, maxLengthDzSec, maxLengthPewSec));
-                        }
-
-
-
-                        if (indexFirstParcels >= countFirst)
-                        {
-                            genSecond();
-                            indexSecondParcels++;
-                            continue;
-                        }
-
-                        if (indexSecondParcels >= countSecond)
-                        {
-                            sb.AppendLine($"{dzialkiFirst[indexFirstParcels].GetAllDataAboutDzialka(maxLengthKw, maxLengthDz, maxLengthPew)}");
-                            indexFirstParcels++;
-                            continue;
-                        }
-
-                        var resultComparison = dzialkiFirst[indexFirstParcels].Sidd.CompareTo(dzialkiSecond[indexSecondParcels].Sidd);
-                        //Console.WriteLine(dzialkiFirst[indexFirstParcels].Sidd + "<"+ resultComparison +">" + dzialkiSecond[indexSecondParcels].Sidd);
-                        if (resultComparison == 0)
-                        {
-
-                            sb.AppendLine(dzialkiFirst[indexFirstParcels].GetAllDataAboutDzialka(maxLengthKw, maxLengthDz, maxLengthPew) + "\t\t\t" + dzialkiSecond[indexSecondParcels].GetAllDataAboutDzialka(maxLengthKwSec, maxLengthDzSec, maxLengthPewSec));
-                            indexFirstParcels++;
+                            sb.AppendLine($"{dzialkiSecond[indexSecondParcels].GetRightSiteDataAboutDzialka(maxLengthKw, maxLengthKwSec)}");
                             indexSecondParcels++;
                         }
-                        else if (resultComparison == -1)
+                        else
+
+                        if (indexSecondParcels >= countSecond || resultComparison == -1)
                         {
-                            sb.AppendLine($"{dzialkiFirst[indexFirstParcels].GetAllDataAboutDzialka(maxLengthKw, maxLengthDz, maxLengthPew)}");
+                           sb.AppendLine($"{dzialkiFirst[indexFirstParcels].GetAllDataAboutDzialka(maxLengthKw)}");
                             indexFirstParcels++;
                         }
                         else
+                        if (resultComparison == 0)
                         {
-                            GetAddedUnits();
+
+                            sb.AppendLine(dzialkiFirst[indexFirstParcels].GetAllDataAboutDzialka(maxLengthKw) + "\t\t\t" + dzialkiSecond[indexSecondParcels].GetAllDataAboutDzialka(maxLengthKwSec));
+                            indexFirstParcels++;
                             indexSecondParcels++;
                         }
-
-
-
-                        //if (indexFirstParcels >= countFirst)
-                        //{
-                        //    sb.AppendLine($"\t\t\t\t\t\t\t\t\t\t\t{dzialkiSecond[indexSecondParcels].GetAllDataAboutDzialka()}");
-                        //    indexSecondParcels++;
-                        //}
-
-                        //if (indexFirstParcels >= countFirst)
-                        //{
-                        //    sb.AppendLine($"{dzialkiFirst[indexFirstParcels].GetAllDataAboutDzialka()}");
-                        //    indexFirstParcels++;
-                        //}
-
                     }
+
+
 
                 }
                 else
                 {
-                    Console.WriteLine("NOT EXIST : " + dtoFirst);
+                    Console.WriteLine("NOT EXIST : " + dtoFirst.Ijr);
                 }
             }
             return sb.ToString();

@@ -56,7 +56,7 @@ namespace Porównator_Baz.Models
 
         public bool Equals(ParcelsDto dz)
         {
-            if (dz is null)  return false;
+            if (dz is null) return false;
 
             return Idd == dz.Idd &&
                    Kw == dz.Kw &&
@@ -66,14 +66,30 @@ namespace Porównator_Baz.Models
 
         public override bool Equals(object obj) => Equals(obj as ParcelsDto);
 
-        public string GetAllDataAboutDzialka(int padKW = 100, int padObrNrdz = 20, int padPwe = 20)
+        public string GetAllDataAboutDzialka(int padKW = 100)
         {
-            var lnParcel = $"{NrObrebu}-{Idd}".Length;
-            var lnPew = Pew.ToString().Length;
-            var lnKw = Kw.Length;
+            return ($"{NrObrebu}-{Idd}".PadRight(15) + $"Pow.: {Pew}".PadRight(15) + $"KW: {Kw}".PadRight(padKW + 10));
+        }
+
+        public string GetRightSiteDataAboutDzialka(int padKWDirst = 100, int padKwSecond = 100)
+        {
+            string strDz = "";
+
+            for (int j = 0; j < 15; j++)
+            {
+                strDz += " ";
+            }
+            for (int k = 0; k < 15; k++)
+            {
+                strDz += " ";
+            }
+            for (int l = 0; l < padKWDirst+10; l++)
+            {
+                strDz += " ";
+            }
 
 
-            return ($"{NrObrebu}-{Idd}".PadRight(15) + $"\tPow.: {Pew}".PadRight(15) + $"\tKW: {Kw}".PadRight(padKW+10));
+            return strDz + "\t\t\t" + GetAllDataAboutDzialka(padKwSecond);
         }
     }
 }
