@@ -22,15 +22,12 @@ namespace Porównator_Baz.Services
                 throw new ConnectionDataBaseException();
             }
 
-
             var jrsFirst = dbContextFirst.Jedn_Rejs;
             foreach (var item in jrsFirst)
             {
                 jednRejDtoFirst.Add(new RegisterUnitDto(item));
             }
-
             jednRejDtoFirst.Sort(OrderObrAndIjr);
-
 
             var jrsSecond = dbContextSecond.Jedn_Rejs;
             foreach (var item in jrsSecond)
@@ -66,10 +63,6 @@ namespace Porównator_Baz.Services
                 }
 
                 var equalObr = x.ObrebNazwa.CompareTo(y.ObrebNazwa);
-
-
-
-
                 if (equalObr != 0)
                 {
                     return equalObr;
@@ -80,116 +73,223 @@ namespace Porównator_Baz.Services
                 }
             }
         }
-    
 
 
-    public string GetDifferencesOwner()
-    {
-        StringBuilder sb = new StringBuilder();
-        foreach (var dtoFirst in jednRejDtoFirst)
+
+        public string GetDifferencesOwner()
         {
-            var existUnit = jednRejDtoSecond.Exists(s => dtoFirst.Equals(s));
-            if (existUnit)
+            StringBuilder sb = new StringBuilder();
+            foreach (var dtoFirst in jednRejDtoFirst)
             {
-                var owners = jednRejDtoSecond.SingleOrDefault(jednSec => dtoFirst.Equals(jednSec)).Podmioty;
-
-                if (!dtoFirst.Podmioty.SequenceEqual(owners))
+                var existUnit = jednRejDtoSecond.Exists(s => dtoFirst.Equals(s));
+                if (existUnit)
                 {
+                    var owners = jednRejDtoSecond.SingleOrDefault(jednSec => dtoFirst.Equals(jednSec)).Podmioty;
+
+                    if (!dtoFirst.Podmioty.SequenceEqual(owners))
+                    {
+                        sb.AppendLine("________________________________________________________________________________________________________________\n");
+                        sb.AppendLine($"{dtoFirst.GetAllAboutUnit()}");
+
+                        sb.AppendLine("\tBAZA 1:");
+                        dtoFirst.Podmioty.ForEach(x => sb.AppendLine(x.GetAllAboutOwner()));
+                        sb.AppendLine("\n\tBAZA 2:");
+                        owners.ForEach(o => sb.AppendLine(o.GetAllAboutOwner()));
+                    }
+                }
+            }
+
+            return sb.ToString();
+        }
+
+
+        public string GetDifferencesParecels(bool ignoreArea = false, bool ignoreKW = false)
+        {
+
+
+            StringBuilder sb = new StringBuilder();
+            ParcelEqualityComparer parcComp = new ParcelEqualityComparer(ignoreKW, ignoreArea);
+            foreach (var dtoFirst in jednRejDtoFirst)
+            {
+                var existUnit = jednRejDtoSecond.Exists(s => dtoFirst.Equals(s));
+                if (existUnit)
+                {
+                    // select all parcels from selected unit
+                    var dzialkiSecond = jednRejDtoSecond.SingleOrDefault(jednSec => dtoFirst.Equals(jednSec)).Dzialki;
+
+                    dtoFirst.Dzialki.SequenceEqual(dzialkiSecond, parcComp);
+
+                    if (dtoFirst.Dzialki.SequenceEqual(dzialkiSecond, parcComp))
+                    {
+                        continue;
+                    }
+                    else
+                    if (dtoFirst.Dzialki.SequenceEqual(dzialkiSecond))
+                    {
+                        continue;
+                    }
+
+
+
                     sb.AppendLine("________________________________________________________________________________________________________________\n");
-                    sb.AppendLine($"{dtoFirst.GetAllAboutUnit()}");
+                    sb.AppendLine($"{dtoFirst.ObrebNr}-{dtoFirst.Ijr}\t{dtoFirst.ObrebNazwa}");
+                    var dzialkiFirst = dtoFirst.Dzialki;
+                    var maxLengthKw = dzialkiFirst.Max(d => d.Kw.Length);
+                    var maxLengthDz = dzialkiFirst.Max(d => (d.NrObrebu + d.Idd).Length);
+                    var maxLengthPew = dzialkiFirst.Max(d => d.Pew.ToString().Length);
+
+                    var maxLengthKwSec = dzialkiSecond.Max(d => d.Kw.Length);
+                    var maxLengthDzSec = dzialkiSecond.Max(d => (d.NrObrebu + d.Idd).Length);
+                    var maxLengthPewSec = dzialkiSecond.Max(d => d.Pew.ToString().Length);
 
                     sb.AppendLine("\tBAZA 1:");
-                    dtoFirst.Podmioty.ForEach(x => sb.AppendLine(x.GetAllAboutOwner()));
+                    dzialkiFirst.ForEach(x => sb.AppendLine(x.GetAllDataAboutDzialka(maxLengthKw, maxLengthDz, maxLengthPew)));
                     sb.AppendLine("\n\tBAZA 2:");
-                    owners.ForEach(o => sb.AppendLine(o.GetAllAboutOwner()));
-                }
-            }
-        }
+                    dzialkiSecond.ForEach(x => sb.AppendLine(x.GetAllDataAboutDzialka(maxLengthKwSec, maxLengthDzSec, maxLengthPewSec)));
 
-        return sb.ToString();
-    }
+                    var countFirst = dzialkiFirst.Count();
+                    var countSecond = dzialkiSecond.Count();
+
+                    var countRowsInReport = countFirst > countSecond ? countFirst : countSecond;
+
+                    int indexFirstParcels = 0;
+                    int indexSecondParcels = 0;
+
+                    var maxLengthFirst = dzialkiFirst.Max(d => d.GetAllDataAboutDzialka(maxLengthKw, maxLengthDz, maxLengthPew).Length);
+                    var maxLengthSecond = dzialkiSecond.Max(d => d.GetAllDataAboutDzialka(maxLengthKwSec, maxLengthDzSec, maxLengthPewSec).Length);
 
 
-    public string GetDifferencesParecels(bool ignoreArea = false, bool ignoreKW = false)
-    {
-        StringBuilder sb = new StringBuilder();
-        ParcelEqualityComparer parcComp = new ParcelEqualityComparer(ignoreKW, ignoreArea);
-        foreach (var dtoFirst in jednRejDtoFirst)
-        {
-            var existUnit = jednRejDtoSecond.Exists(s => dtoFirst.Equals(s));
-            if (existUnit)
-            {
-                // select all parcels from selected unit
-                var dzialki = jednRejDtoSecond.SingleOrDefault(jednSec => dtoFirst.Equals(jednSec)).Dzialki;
+                    sb.AppendLine($"BAZA 1:" + "\t" + "BAZA2:".PadLeft(maxLengthFirst));
+                    for (int i = 0; i < countRowsInReport; i++)
+                    {
 
-                dtoFirst.Dzialki.SequenceEqual(dzialki, parcComp);
 
-                if (dtoFirst.Dzialki.SequenceEqual(dzialki, parcComp))
-                {
-                    continue;
+                        void genSecond()
+                        {
+                            //sb.AppendLine("".PadLeft(maxLengthFirst + maxLengthSecond) + $"\t\t\t{dzialkiSecond[indexSecondParcels].GetAllDataAboutDzialka(maxLengthKwSec, maxLengthDzSec, maxLengthPewSec)}");
+                            //sb.AppendLine("".PadRight(maxLengthFirst + maxLengthSecond) + $"\t\t\t{dzialkiSecond[indexSecondParcels].GetAllDataAboutDzialka(maxLengthKwSec, maxLengthDzSec, maxLengthPewSec)}");
+
+                            string strDz = "";
+
+                            for (int j = 0; j < 15; j++)
+                            {
+                                strDz += " ";
+                            }
+                            strDz += "\t";
+                            for (int k = 0; k < 15; k++)
+                            {
+                                strDz += " ";
+                            }
+                            strDz += "\t";
+                            for (int l = 0; l < maxLengthKwSec; l++)
+                            {
+                                strDz += " ";
+                            }
+
+                            sb.AppendLine(strDz + "\t\t\t" + dzialkiSecond[indexSecondParcels].GetAllDataAboutDzialka(maxLengthKwSec, maxLengthDzSec, maxLengthPewSec));
+                        }
+
+
+
+                        if (indexFirstParcels >= countFirst)
+                        {
+                            genSecond();
+                            indexSecondParcels++;
+                            continue;
+                        }
+
+                        if (indexSecondParcels >= countSecond)
+                        {
+                            sb.AppendLine($"{dzialkiFirst[indexFirstParcels].GetAllDataAboutDzialka(maxLengthKw, maxLengthDz, maxLengthPew)}");
+                            indexFirstParcels++;
+                            continue;
+                        }
+
+                        var resultComparison = dzialkiFirst[indexFirstParcels].Sidd.CompareTo(dzialkiSecond[indexSecondParcels].Sidd);
+                        //Console.WriteLine(dzialkiFirst[indexFirstParcels].Sidd + "<"+ resultComparison +">" + dzialkiSecond[indexSecondParcels].Sidd);
+                        if (resultComparison == 0)
+                        {
+
+                            sb.AppendLine(dzialkiFirst[indexFirstParcels].GetAllDataAboutDzialka(maxLengthKw, maxLengthDz, maxLengthPew) + "\t\t\t" + dzialkiSecond[indexSecondParcels].GetAllDataAboutDzialka(maxLengthKwSec, maxLengthDzSec, maxLengthPewSec));
+                            indexFirstParcels++;
+                            indexSecondParcels++;
+                        }
+                        else if (resultComparison == -1)
+                        {
+                            sb.AppendLine($"{dzialkiFirst[indexFirstParcels].GetAllDataAboutDzialka(maxLengthKw, maxLengthDz, maxLengthPew)}");
+                            indexFirstParcels++;
+                        }
+                        else
+                        {
+                            GetAddedUnits();
+                            indexSecondParcels++;
+                        }
+
+
+
+                        //if (indexFirstParcels >= countFirst)
+                        //{
+                        //    sb.AppendLine($"\t\t\t\t\t\t\t\t\t\t\t{dzialkiSecond[indexSecondParcels].GetAllDataAboutDzialka()}");
+                        //    indexSecondParcels++;
+                        //}
+
+                        //if (indexFirstParcels >= countFirst)
+                        //{
+                        //    sb.AppendLine($"{dzialkiFirst[indexFirstParcels].GetAllDataAboutDzialka()}");
+                        //    indexFirstParcels++;
+                        //}
+
+                    }
+
                 }
                 else
-                if (dtoFirst.Dzialki.SequenceEqual(dzialki))
                 {
-                    continue;
+                    Console.WriteLine("NOT EXIST : " + dtoFirst);
                 }
-
-                sb.AppendLine("________________________________________________________________________________________________________________\n");
-                sb.AppendLine($"{dtoFirst.ObrebNr}-{dtoFirst.Ijr}\t{dtoFirst.ObrebNazwa}");
-
-                sb.AppendLine("\tBAZA 1:");
-                dtoFirst.Dzialki.ForEach(x => sb.AppendLine(x.GetAllDataAboutDzialka()));
-                sb.AppendLine("\n\tBAZA 2:");
-                dzialki.ForEach(x => sb.AppendLine(x.GetAllDataAboutDzialka()));
             }
-            else
-            {
-                Console.WriteLine("NOT EXIST : " + dtoFirst);
-            }
+            return sb.ToString();
         }
-        return sb.ToString();
-    }
 
-    public string GetRemovedUnits()
-    {
-        StringBuilder sb = new StringBuilder();
-        foreach (var dtoFirst in jednRejDtoFirst)
+        public string GetRemovedUnits()
         {
-            var exist = jednRejDtoSecond.Exists(s => dtoFirst.Equals(s));
-            if (!exist)
+            StringBuilder sb = new StringBuilder();
+            foreach (var dtoFirst in jednRejDtoFirst)
             {
-                sb.AppendLine("________________________________________________________________________________________________________________\n");
-                sb.AppendLine($"Obręb: {dtoFirst.ObrebNr}-{dtoFirst.ObrebNazwa}\tNr JR: {dtoFirst.Ijr}");
+                var exist = jednRejDtoSecond.Exists(s => dtoFirst.Equals(s));
+                if (!exist)
+                {
+                    sb.AppendLine("________________________________________________________________________________________________________________\n");
+                    sb.AppendLine($"Obręb: {dtoFirst.ObrebNr}-{dtoFirst.ObrebNazwa}\tNr JR: {dtoFirst.Ijr}");
 
-                sb.AppendLine($"\tWłaściciele:");
-                dtoFirst.Podmioty.ForEach(p => sb.AppendLine($"\t\t{p.GetAllAboutOwner()}"));
+                    sb.AppendLine($"\tWłaściciele:");
+                    dtoFirst.Podmioty.ForEach(p => sb.AppendLine($"\t\t{p.GetAllAboutOwner()}"));
 
-                sb.AppendLine($"\tDziałki:");
-                dtoFirst.Dzialki.ForEach(d => sb.AppendLine($"\t\tDz.: {d.NrObrebu}-{d.Idd}\tPow.: {d.Pew}\tKW: {d.Kw}"));
+                    sb.AppendLine($"\tDziałki:");
+                    dtoFirst.Dzialki.ForEach(d => sb.AppendLine($"\t\tDz.: {d.NrObrebu}-{d.Idd}\tPow.: {d.Pew}\tKW: {d.Kw}"));
+                }
             }
+            return sb.ToString();
         }
-        return sb.ToString();
-    }
 
-    public string GetAddedUnits()
-    {
-        StringBuilder sb = new StringBuilder();
-        foreach (var dtoSec in jednRejDtoSecond)
+        public string GetAddedUnits()
         {
-            var exist = jednRejDtoFirst.Exists(s => dtoSec.Equals(s));
-            if (!exist)
+            StringBuilder sb = new StringBuilder();
+            foreach (var dtoSec in jednRejDtoSecond)
             {
-                sb.AppendLine("________________________________________________________________________________________________________________\n");
-                sb.AppendLine($"Obręb: {dtoSec.ObrebNr}-{dtoSec.ObrebNazwa}\tNr JR: {dtoSec.Ijr}");
+                var exist = jednRejDtoFirst.Exists(s => dtoSec.Equals(s));
+                if (!exist)
+                {
+                    sb.AppendLine("________________________________________________________________________________________________________________\n");
+                    sb.AppendLine($"Obręb: {dtoSec.ObrebNr}-{dtoSec.ObrebNazwa}\tNr JR: {dtoSec.Ijr}");
 
-                sb.AppendLine($"\tWłaściciele:");
-                dtoSec.Podmioty.ForEach(p => sb.AppendLine($"\t\t{p.GetAllAboutOwner()}"));
+                    sb.AppendLine($"\tWłaściciele:");
+                    dtoSec.Podmioty.ForEach(p => sb.AppendLine($"\t\t{p.GetAllAboutOwner()}"));
 
-                sb.AppendLine($"\tDziałki:");
-                dtoSec.Dzialki.ForEach(d => sb.AppendLine($"\t\tDz.: {d.NrObrebu}-{d.Idd}\tPow.: {d.Pew}\tKW: {d.Kw}"));
+                    sb.AppendLine($"\tDziałki:");
+                    dtoSec.Dzialki.ForEach(d => sb.AppendLine($"\t\tDz.: {d.NrObrebu}-{d.Idd}\tPow.: {d.Pew}\tKW: {d.Kw}"));
+                }
             }
+            return sb.ToString();
         }
-        return sb.ToString();
     }
-}
 }

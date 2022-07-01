@@ -11,7 +11,15 @@
 
             <TabItem Header="Opcje">
                 <StackPanel>
-                    <Label>Ścieżka do bazy 1 (archiwalna):</Label>
+                    <DockPanel>
+                        <Label Padding="1">Port firebird</Label>
+                        <RadioButton x:Name="radioBtn3050" Margin="5,0" VerticalContentAlignment="Center" Checked="RadioButton_Checked_3050">3050</RadioButton>
+                        <RadioButton x:Name="radioBtn3051" VerticalContentAlignment="Center" Checked="RadioButton_Checked_3051">3051</RadioButton>
+                    </DockPanel>
+
+                    <Separator  Height="10" Background="Black"/>
+
+                    <Label>Ścieżka do bazy scalenia 1 (archiwalna):</Label>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"></ColumnDefinition>
@@ -20,7 +28,7 @@
                         <TextBox x:Name="textBoxPathBase1"></TextBox>
                         <Button x:Name="buttonPathName1" Grid.Column="1" Click="ButtonPathName1_Click">></Button>
                     </Grid>
-                    <Label>Ścieżka do bazy 2 (aktualna):</Label>
+                    <Label>Ścieżka do bazy scalenia 2 (aktualna):</Label>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"></ColumnDefinition>
@@ -88,7 +96,7 @@
                         <CheckBox IsEnabled="False" IsChecked="False" x:Name="checkBoxIgnoreKW"  Grid.Row="0" Margin="20, 0" VerticalContentAlignment="Center" Unchecked="CheckBoxIgnoreKW_Unchecked" Checked="CheckBoxIgnoreKW_Checked">KW</CheckBox>
                         <CheckBox IsEnabled="False" IsChecked="False" x:Name="checkBoxIgnoreParcelsArea" VerticalContentAlignment="Center" Unchecked="CheckBoxIgnoreParcelsArea_Unchecked" Checked="CheckBoxIgnoreParcelsArea_Checked">Powierzchnie działek</CheckBox>
                     </DockPanel>
-                    <TextBox  Grid.Row="1"  x:Name="differenceParcels" VerticalScrollBarVisibility="Visible"/>
+                    <TextBox  Grid.Row="1"  x:Name="differenceParcels" VerticalScrollBarVisibility="Visible" FontFamily="Courier New"/>
                 </Grid>
             </TabItem>
 

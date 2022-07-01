@@ -14,9 +14,9 @@ namespace Porównator_Baz.Models
 
         public ParcelsDto(Dzialka dzialka)
         {
-            Idd = dzialka.IDD;
+            Idd = dzialka.IDD.Trim();
             NrObrebu = dzialka.Obreb.ID;
-            Kw = dzialka.KW;
+            Kw = dzialka.KW.Trim();
             Pew = dzialka.PEW;
             Sidd = dzialka.SIDD;
         }
@@ -66,9 +66,14 @@ namespace Porównator_Baz.Models
 
         public override bool Equals(object obj) => Equals(obj as ParcelsDto);
 
-        public string GetAllDataAboutDzialka()
+        public string GetAllDataAboutDzialka(int padKW = 100, int padObrNrdz = 20, int padPwe = 20)
         {
-            return $"\t\t{NrObrebu}-{Idd}\tPow.: {Pew}\tKW: {Kw}";
+            var lnParcel = $"{NrObrebu}-{Idd}".Length;
+            var lnPew = Pew.ToString().Length;
+            var lnKw = Kw.Length;
+
+
+            return ($"{NrObrebu}-{Idd}".PadRight(15) + $"\tPow.: {Pew}".PadRight(15) + $"\tKW: {Kw}".PadRight(padKW+10));
         }
     }
 }

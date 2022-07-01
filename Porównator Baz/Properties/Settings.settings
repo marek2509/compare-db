@@ -9,10 +9,13 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Login" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">SYSDBA</Value>
     </Setting>
     <Setting Name="Password" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Port" Type="System.String" Scope="User">
+      <Value Profile="(Default)">3050</Value>
     </Setting>
   </Settings>
 </SettingsFile>

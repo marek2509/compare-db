@@ -10,12 +10,13 @@ namespace Porównator_Baz.Middleware
     {
         public static string Name { get; set; } = "SYSDBA";
         public static string Password { private get; set; }
-
+        public static string Port { get; set; }
 
         public static string GetConnectionString(string path)
         {
+            Port = Properties.Settings.Default.Port;
             SetPassword(Properties.Settings.Default.Password, Properties.Settings.Default.Login);
-            return $@"User={Name};Password={Password};Database={path}; DataSource=localhost; Port=3051;Dialect=3; Charset=NONE;Role=;Connection lifetime=15;Pooling=true;MinPoolSize=0;MaxPoolSize=50;Packet Size=8192;ServerType=0;";
+            return $@"User={Name};Password={Password};Database={path}; DataSource=localhost; Port={Port};Dialect=3; Charset=NONE;Role=;Connection lifetime=15;Pooling=true;MinPoolSize=0;MaxPoolSize=50;Packet Size=8192;ServerType=0;";
         }
 
         static void SetPassword(string password, string login)

@@ -22,6 +22,15 @@ namespace Porównator_Baz
             textBoxPathBase2.Text = Properties.Settings.Default.PathBase2;
             textBoxLogin.Text = Properties.Settings.Default.Login;
             textBoxPassword.Password = Properties.Settings.Default.Password;
+
+            if (Properties.Settings.Default.Port == "3050")
+            {
+                radioBtn3050.IsChecked = true;
+            }
+            else
+            {
+                radioBtn3051.IsChecked = true;
+            }
         }
         JednRejService jednRejService = null;
 
@@ -144,6 +153,18 @@ namespace Porównator_Baz
         private void CheckBoxIgnoreParcelsArea_Unchecked(object sender, RoutedEventArgs e)
         {
             RefreshTabParcels();
+        }
+
+        private void RadioButton_Checked_3050(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.Port = "3050";
+            Properties.Settings.Default.Save();
+        }
+
+        private void RadioButton_Checked_3051(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.Port = "3051";
+            Properties.Settings.Default.Save();
         }
     }
 }
