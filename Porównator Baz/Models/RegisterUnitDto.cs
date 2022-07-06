@@ -52,5 +52,10 @@ namespace Porównator_Baz.Models
         {
             return $"{ObrebNr}-{Ijr}\t{ObrebNazwa}";
         }
+
+        public string GetAll(char separator = ' ')
+        {
+            return $"{ObrebNr}-{Ijr}{separator}{ObrebNazwa}";
+        }
     }
 }

@@ -27,7 +27,9 @@ namespace Porównator_Baz.Models
             if (typPodmiotu == "F")
             {
                 var osobaFizyczna = udzial.Podmiot.OsobaFizyczna;
-                Nazwa = $"{osobaFizyczna.NZW} {osobaFizyczna.PIM} {osobaFizyczna.DIM} " +
+                var secondName = osobaFizyczna.DIM == null ? "" : osobaFizyczna.DIM + " ";
+                Console.WriteLine(">"+secondName + "<");
+                Nazwa = $"{osobaFizyczna.NZW} {osobaFizyczna.PIM} {secondName}" +
                         $"({osobaFizyczna.OIM}, {osobaFizyczna.MIM})";
             }
             else if (typPodmiotu == "M")
@@ -37,7 +39,7 @@ namespace Porównator_Baz.Models
                 var zona = malzenstwo.Zona;
 
                 Nazwa = $"MĄŻ: {maz.NZW} {maz.PIM} {maz.DIM} " +
-                        $"({maz.OIM}, {maz.MIM})\t" +
+                        $"({maz.OIM}, {maz.MIM}) " +
                         $"ŻONA: {zona.NZW} {zona.PIM} {zona.DIM} " +
                         $"({zona.OIM}, {zona.MIM})";
             }
@@ -69,6 +71,11 @@ namespace Porównator_Baz.Models
         public string GetAllAboutOwner()
         {
             return $"\t\t{RWD}\t{Udzial}\t{Nazwa}";
+        }
+
+        public string GetAll(char separator = ' ')
+        {
+            return $"{RWD}{separator}{Udzial}{separator}{Nazwa}";
         }
     }
 }

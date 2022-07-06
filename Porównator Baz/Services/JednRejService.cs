@@ -204,6 +204,41 @@ namespace Porównator_Baz.Services
             return sb.ToString();
         }
 
+        public string SaveAsCsvDifferencesParcels()
+        {
+            StringBuilder sb = new StringBuilder();
+
+
+            return "";
+        }
+
+        public string SaveAsCsvDeletedUnits()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine(string.Join("\t","Obręb","Nr jednostki","Właściciel","Działka","Powierzchnia","KW"));
+            foreach (var dtoFirst in jednRejDtoFirst)
+            {
+                var exist = jednRejDtoSecond.Exists(s => dtoFirst.Equals(s));
+                if (!exist)
+                {
+                  
+                    //sb.AppendLine($"Obręb: {dtoFirst.ObrebNr}-{dtoFirst.ObrebNazwa}\tNr JR: {dtoFirst.Ijr}");
+                    sb.AppendLine(string.Join("\t",dtoFirst.GetAll('\t'),"","","",""));
+
+                    //sb.AppendLine($"\tWłaściciele:");
+                    //dtoFirst.Podmioty.ForEach(p => sb.AppendLine($"\t\t{p.GetAllAboutOwner()}"));
+                    dtoFirst.Podmioty.ForEach(p => sb.AppendLine(string.Join("\t","","",p.GetAll(),"", "", "")));
+
+                    //sb.AppendLine($"\tDziałki:");
+                    dtoFirst.Dzialki.ForEach(d => sb.AppendLine(string.Join("\t","","","",d.GetAll('\t'))));
+                    sb.AppendLine();
+                }
+            }
+
+            return sb.ToString();
+        }
+
         public string GetRemovedUnits()
         {
             StringBuilder sb = new StringBuilder();

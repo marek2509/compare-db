@@ -91,5 +91,10 @@ namespace Porównator_Baz.Models
 
             return strDz + "\t\t\t" + GetAllDataAboutDzialka(padKwSecond);
         }
+
+        public string GetAll(char separator = ' ')
+        {
+            return ($"{NrObrebu}-{Idd}{separator}{Pew}{separator}{Kw}");
+        }
     }
 }

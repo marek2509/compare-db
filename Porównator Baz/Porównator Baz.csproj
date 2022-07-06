@@ -107,6 +107,7 @@
     <Compile Include="Middleware\ConnectionString.cs" />
     <Compile Include="Middleware\ParcelEqualityComparer.cs" />
     <Compile Include="Middleware\PathFromDialog.cs" />
+    <Compile Include="Middleware\SaveFile.cs" />
     <Compile Include="Models\ParcelsDto.cs" />
     <Compile Include="Models\RegisterUnitDto.cs" />
     <Compile Include="Models\OwnerDto.cs" />

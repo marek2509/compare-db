@@ -62,6 +62,7 @@ namespace Porównator_Baz
             Properties.Settings.Default.Password = textBoxPassword.Password;
             Properties.Settings.Default.Save();
         }
+
         bool infinity;
         private async void ButtonEqualBase_Click(object sender, RoutedEventArgs e)
         {
@@ -165,6 +166,11 @@ namespace Porównator_Baz
         {
             Properties.Settings.Default.Port = "3051";
             Properties.Settings.Default.Save();
+        }
+
+        private void CopyDeletedUnits_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFile.Save(jednRejService.SaveAsCsvDeletedUnits());
         }
     }
 }
