@@ -195,6 +195,9 @@
   <ItemGroup>
     <Resource Include="WagaLogo.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\save.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

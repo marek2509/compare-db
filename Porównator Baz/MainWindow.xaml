@@ -71,17 +71,37 @@
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"></ColumnDefinition>
-                        <ColumnDefinition Width="80"></ColumnDefinition>
+                        <ColumnDefinition Width="120"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <TextBox Grid.ColumnSpan="2" Grid.RowSpan="2" x:Name="deletedUnit" VerticalScrollBarVisibility="Visible"  AcceptsReturn="True" />
-                    <Button x:Name="copyDeletedUnits" Click="CopyDeletedUnits_Click" Grid.Column="1" Grid.Row="1" Width="30" Height="30" Background="Transparent" BorderBrush="Transparent">
-                        <Image Source="./Resources/copyTo.png"/>
+                    <Button x:Name="copyDeletedUnits" Click="CopyDeletedUnits_Click" Grid.Column="1" Grid.Row="1" Width="80" Height="30" Background="Transparent" BorderBrush="LightBlue">
+                        <DockPanel>
+                        <Image Source="./Resources/save.png" Height="15"/>
+                        <Label>Zapisz</Label>
+                        </DockPanel>
                     </Button>
                 </Grid>
             </TabItem>
 
             <TabItem Header="Dodane jednostki" x:Name="tabAddeddUnit">
-                <TextBox x:Name="addedUnit" VerticalScrollBarVisibility="Visible"  AcceptsReturn="True"/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="120"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="addedUnit" VerticalScrollBarVisibility="Visible"  AcceptsReturn="True" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+                    <Button x:Name="copyAddedUnits" Click="CopyAddedUnits_Click"  Grid.Column="1" Grid.Row="1" Width="80" Height="30" Background="Transparent" BorderBrush="LightBlue">
+                        <DockPanel>
+                            <Image Source="./Resources/save.png" Height="15"/>
+                            <Label>Zapisz</Label>
+                        </DockPanel>
+                    </Button>
+                </Grid>
+
             </TabItem>
 
             <TabItem Header="Różnice - działki" x:Name="tabDifferencesParcels">
@@ -89,19 +109,50 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"></RowDefinition>
                         <RowDefinition></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
                     </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition Width="120"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
                     <DockPanel  Grid.Row="0">
 
                         <Label  VerticalContentAlignment="Center" >Podczas porównania ignoruj:</Label>
                         <CheckBox IsEnabled="False" IsChecked="False" x:Name="checkBoxIgnoreKW"  Grid.Row="0" Margin="20, 0" VerticalContentAlignment="Center" Unchecked="CheckBoxIgnoreKW_Unchecked" Checked="CheckBoxIgnoreKW_Checked">KW</CheckBox>
                         <CheckBox IsEnabled="False" IsChecked="False" x:Name="checkBoxIgnoreParcelsArea" VerticalContentAlignment="Center" Unchecked="CheckBoxIgnoreParcelsArea_Unchecked" Checked="CheckBoxIgnoreParcelsArea_Checked">Powierzchnie działek</CheckBox>
                     </DockPanel>
-                    <TextBox  Grid.Row="1"  x:Name="differenceParcels" VerticalScrollBarVisibility="Visible"  AcceptsReturn="True" FontFamily="Courier New"/>
+                    <TextBox  Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="2" x:Name="differenceParcels" VerticalScrollBarVisibility="Visible"  AcceptsReturn="True" FontFamily="Courier New"/>
+
+                    <Button  x:Name="copyDifferencesParcels" Click="CopyDifferencesParcels_Click" Grid.Column="1" Grid.Row="2" Width="80" Height="30" Background="Transparent" BorderBrush="LightBlue">
+                        <DockPanel>
+                            <Image Source="./Resources/save.png" Height="15"/>
+                            <Label>Zapisz</Label>
+                        </DockPanel>
+                    </Button>
                 </Grid>
             </TabItem>
 
             <TabItem Header="Różnice - właściciele" x:Name="tabDifferencesOwner">
-                <TextBox x:Name="differenceOwner" VerticalScrollBarVisibility="Visible"  AcceptsReturn="True"/>
+                
+                      <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="120"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="differenceOwner" VerticalScrollBarVisibility="Visible"  AcceptsReturn="True" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+
+                    <Button x:Name="copydifferenceOwner" Click="CopydifferenceOwner_Click"  Grid.Column="1" Grid.Row="1" Width="80" Height="30"  Background="Transparent"  OpacityMask="Red" BorderBrush="LightBlue">
+                        <DockPanel>
+                            <Image Source="./Resources/save.png" Height="15"/>
+                            <Label>Zapisz</Label>
+                        </DockPanel>
+                    </Button>
+                </Grid>
+                
             </TabItem>
 
         </TabControl>

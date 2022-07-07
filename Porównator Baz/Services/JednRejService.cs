@@ -36,7 +36,23 @@ namespace Porównator_Baz.Services
                 jednRejDtoSecond.Add(new RegisterUnitDto(item));
             }
             jednRejDtoSecond.Sort(OrderObrAndIjr);
+
+            splaszczenieTest(jednRejDtoFirst);
         }
+
+        public void splaszczenieTest(List<RegisterUnitDto> dtos)
+        {
+           var spl = jednRejDtoFirst.SelectMany(x => x.Dzialki, (jedn, dzialka)  => new
+            {
+             dz = dzialka,
+              ijr = jedn.Ijr,
+              obn =   jedn.ObrebNazwa
+            });
+
+            Console.WriteLine("Spłaszczenie ziomy");
+            spl.ToList().ForEach(x => Console.WriteLine(string.Join(", ", x.ijr, x.obn, x.dz.Idd)));
+        }
+
 
         int OrderObrAndIjr(RegisterUnitDto x, RegisterUnitDto y)
         {
@@ -132,7 +148,7 @@ namespace Porównator_Baz.Services
                     {
                         continue;
                     }
-             
+
 
                     //var maxLengthDz = dzialkiFirst.Max(d => (d.NrObrebu + d.Idd).Length);
                     //var maxLengthPew = dzialkiFirst.Max(d => d.Pew.ToString().Length);
@@ -180,7 +196,7 @@ namespace Porównator_Baz.Services
 
                         if (indexSecondParcels >= countSecond || resultComparison == -1)
                         {
-                           sb.AppendLine($"{dzialkiFirst[indexFirstParcels].GetAllDataAboutDzialka(maxLengthKw)}");
+                            sb.AppendLine($"{dzialkiFirst[indexFirstParcels].GetAllDataAboutDzialka(maxLengthKw)}");
                             indexFirstParcels++;
                         }
                         else
@@ -204,34 +220,125 @@ namespace Porównator_Baz.Services
             return sb.ToString();
         }
 
-        public string SaveAsCsvDifferencesParcels()
+        internal string SaveAsTxtAddedUnits()
         {
             StringBuilder sb = new StringBuilder();
 
-
-            return "";
+            sb.AppendLine(string.Join("\t", "Nr jednostki", "Obręb", "Właściciel", "Działka", "Powierzchnia", "KW"));
+            foreach (var dtoSec in jednRejDtoSecond)
+            {
+                var exist = jednRejDtoFirst.Exists(s => dtoSec.Equals(s));
+                if (!exist)
+                {
+                    sb.AppendLine(string.Join("\t", dtoSec.GetAll('\t'), "", "", "", ""));
+                    dtoSec.Podmioty.ForEach(p => sb.AppendLine(string.Join("\t", "", "", p.GetAll(), "", "", "")));
+                    dtoSec.Dzialki.ForEach(d => sb.AppendLine(string.Join("\t", "", "", "", d.GetAll('\t'))));
+                    sb.AppendLine();
+                }
+            }
+            return sb.ToString();
         }
 
-        public string SaveAsCsvDeletedUnits()
+        public string SaveAsTxtDifferencesParcels(bool ignoreArea = false, bool ignoreKW = false)
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendLine(string.Join("\t","Obręb","Nr jednostki","Właściciel","Działka","Powierzchnia","KW"));
+            sb.AppendLine(string.Join("\t", "Nr jednostki", "Obręb" ,"Baza 1", "Działka", "Powierzchnia", "KW", "Baza 2", "Działka", "Powierzchnia", "KW"));
+
+            ParcelEqualityComparer parcComp = new ParcelEqualityComparer(ignoreKW, ignoreArea);
+            foreach (var dtoFirst in jednRejDtoFirst)
+            {
+                var existUnit = jednRejDtoSecond.Exists(s => dtoFirst.Equals(s));
+                if (existUnit)
+                {
+                    // select all parcels from selected unit
+                    var dzialkiSecond = jednRejDtoSecond.SingleOrDefault(jednSec => dtoFirst.Equals(jednSec)).Dzialki;
+                    var dzialkiFirst = dtoFirst.Dzialki;
+
+                    if (dzialkiFirst.SequenceEqual(dzialkiSecond, parcComp))
+                    {
+                        continue;
+                    }
+
+                    var maxLengthKw = dzialkiFirst.Max(d => d.Kw.Length);
+                    var maxLengthKwSec = dzialkiSecond.Max(d => d.Kw.Length);
+                    var countFirst = dzialkiFirst.Count();
+                    var countSecond = dzialkiSecond.Count();
+
+                    List<ParcelsDto> newParcelsList = new List<ParcelsDto>();
+                    newParcelsList.AddRange(dzialkiFirst);
+                    newParcelsList.AddRange(dzialkiSecond);
+
+                    var countRowsInReport = newParcelsList.Select(x => x.NrObrebu + "-" + x.Idd).Distinct().ToList().Count;
+
+                    int indexFirstParcels = 0;
+                    int indexSecondParcels = 0;
+
+                    var maxLengthFirst = dzialkiFirst.Max(d => d.GetAllDataAboutDzialka(maxLengthKw).Length);
+                    var maxLengthSecond = dzialkiSecond.Max(d => d.GetAllDataAboutDzialka(maxLengthKwSec).Length);
+
+
+                    sb.AppendLine(dtoFirst.GetAll('\t'));
+                    sb.AppendLine("\t\tBAZA 1:" + "\t\t\t\t" + "BAZA 2:");
+                    string tabBeforParcet = "\t\t\t";
+                    for (int i = 0; i < countRowsInReport; i++)
+                    {
+                        var resultComparison = indexFirstParcels < countFirst && indexSecondParcels < countSecond ? dzialkiFirst[indexFirstParcels].Sidd.CompareTo(dzialkiSecond[indexSecondParcels].Sidd) : -5;
+
+
+                        if (indexFirstParcels >= countFirst || resultComparison == 1)
+                        {
+                            sb.AppendLine(tabBeforParcet + "\t\t\t\t" + dzialkiSecond[indexSecondParcels].GetAll('\t'));
+                            indexSecondParcels++;
+                        }
+                        else
+
+                        if (indexSecondParcels >= countSecond || resultComparison == -1)
+                        {
+                            sb.AppendLine(tabBeforParcet + dzialkiFirst[indexFirstParcels].GetAll('\t'));
+                            indexFirstParcels++;
+                        }
+                        else
+                        if (resultComparison == 0)
+                        {
+
+                            sb.AppendLine(tabBeforParcet + dzialkiFirst[indexFirstParcels].GetAll('\t') + "\t\t" + dzialkiSecond[indexSecondParcels].GetAll('\t'));
+                            indexFirstParcels++;
+                            indexSecondParcels++;
+                        }
+                    }
+
+
+                    sb.AppendLine();
+                }
+                else
+                {
+                    Console.WriteLine("NOT EXIST : " + dtoFirst.Ijr);
+                }
+            }
+            return sb.ToString();
+        }
+
+        public string SaveAsTxtDeletedUnits()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine(string.Join("\t", "Nr jednostki", "Obręb", "Właściciel", "Działka", "Powierzchnia", "KW"));
             foreach (var dtoFirst in jednRejDtoFirst)
             {
                 var exist = jednRejDtoSecond.Exists(s => dtoFirst.Equals(s));
                 if (!exist)
                 {
-                  
+
                     //sb.AppendLine($"Obręb: {dtoFirst.ObrebNr}-{dtoFirst.ObrebNazwa}\tNr JR: {dtoFirst.Ijr}");
-                    sb.AppendLine(string.Join("\t",dtoFirst.GetAll('\t'),"","","",""));
+                    sb.AppendLine(string.Join("\t", dtoFirst.GetAll('\t'), "", "", "", ""));
 
                     //sb.AppendLine($"\tWłaściciele:");
                     //dtoFirst.Podmioty.ForEach(p => sb.AppendLine($"\t\t{p.GetAllAboutOwner()}"));
-                    dtoFirst.Podmioty.ForEach(p => sb.AppendLine(string.Join("\t","","",p.GetAll(),"", "", "")));
+                    dtoFirst.Podmioty.ForEach(p => sb.AppendLine(string.Join("\t", "", "", p.GetAll(), "", "", "")));
 
                     //sb.AppendLine($"\tDziałki:");
-                    dtoFirst.Dzialki.ForEach(d => sb.AppendLine(string.Join("\t","","","",d.GetAll('\t'))));
+                    dtoFirst.Dzialki.ForEach(d => sb.AppendLine(string.Join("\t", "", "", "", d.GetAll('\t'))));
                     sb.AppendLine();
                 }
             }

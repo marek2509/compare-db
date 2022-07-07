@@ -170,7 +170,24 @@ namespace Porównator_Baz
 
         private void CopyDeletedUnits_Click(object sender, RoutedEventArgs e)
         {
-            SaveFile.Save(jednRejService.SaveAsCsvDeletedUnits());
+            SaveFile.Save(jednRejService?.SaveAsTxtDeletedUnits());
+        }
+
+        private void CopyAddedUnits_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFile.Save(jednRejService?.SaveAsTxtAddedUnits());
+        }
+
+        private void CopyDifferencesParcels_Click(object sender, RoutedEventArgs e)
+        {
+            var ignorArea = (bool)checkBoxIgnoreParcelsArea.IsChecked;
+            var ignoreKW = (bool)checkBoxIgnoreKW.IsChecked;
+            SaveFile.Save(jednRejService?.SaveAsTxtDifferencesParcels(ignorArea, ignoreKW));
+        }
+
+        private void CopydifferenceOwner_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
