@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("Porównator Baz")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Marek Wojciechowicz")]
 [assembly: AssemblyProduct("Porównator Baz")]
 [assembly: AssemblyCopyright("Copyright ©  2022")]
 [assembly: AssemblyTrademark("")]

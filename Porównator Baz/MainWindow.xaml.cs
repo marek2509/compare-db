@@ -187,7 +187,7 @@ namespace Porównator_Baz
 
         private void CopydifferenceOwner_Click(object sender, RoutedEventArgs e)
         {
-
+            SaveFile.Save(jednRejService?.SaveAsTxtDifferencesOwner());
         }
     }
 }

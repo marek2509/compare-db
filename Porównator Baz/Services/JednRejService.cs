@@ -36,23 +36,7 @@ namespace Porównator_Baz.Services
                 jednRejDtoSecond.Add(new RegisterUnitDto(item));
             }
             jednRejDtoSecond.Sort(OrderObrAndIjr);
-
-            splaszczenieTest(jednRejDtoFirst);
         }
-
-        public void splaszczenieTest(List<RegisterUnitDto> dtos)
-        {
-           var spl = jednRejDtoFirst.SelectMany(x => x.Dzialki, (jedn, dzialka)  => new
-            {
-             dz = dzialka,
-              ijr = jedn.Ijr,
-              obn =   jedn.ObrebNazwa
-            });
-
-            Console.WriteLine("Spłaszczenie ziomy");
-            spl.ToList().ForEach(x => Console.WriteLine(string.Join(", ", x.ijr, x.obn, x.dz.Idd)));
-        }
-
 
         int OrderObrAndIjr(RegisterUnitDto x, RegisterUnitDto y)
         {
@@ -91,34 +75,48 @@ namespace Porównator_Baz.Services
             }
         }
 
+     
+        public string GetAddedUnits()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var dtoSec in jednRejDtoSecond)
+            {
+                var exist = jednRejDtoFirst.Exists(s => dtoSec.Equals(s));
+                if (!exist)
+                {
+                    sb.AppendLine("________________________________________________________________________________________________________________\n");
+                    sb.AppendLine($"Obręb: {dtoSec.ObrebNr}-{dtoSec.ObrebNazwa}\tNr JR: {dtoSec.Ijr}");
 
+                    sb.AppendLine($"\tWłaściciele:");
+                    dtoSec.Podmioty.ForEach(p => sb.AppendLine($"\t\t{p.GetAllAboutOwner()}"));
 
-        public string GetDifferencesOwner()
+                    sb.AppendLine($"\tDziałki:");
+                    dtoSec.Dzialki.ForEach(d => sb.AppendLine($"\t\tDz.: {d.NrObrebu}-{d.Idd}\tPow.: {d.Pew}\tKW: {d.Kw}"));
+                }
+            }
+            return sb.ToString();
+        }
+
+        public string GetRemovedUnits()
         {
             StringBuilder sb = new StringBuilder();
             foreach (var dtoFirst in jednRejDtoFirst)
             {
-                var existUnit = jednRejDtoSecond.Exists(s => dtoFirst.Equals(s));
-                if (existUnit)
+                var exist = jednRejDtoSecond.Exists(s => dtoFirst.Equals(s));
+                if (!exist)
                 {
-                    var owners = jednRejDtoSecond.SingleOrDefault(jednSec => dtoFirst.Equals(jednSec)).Podmioty;
+                    sb.AppendLine("________________________________________________________________________________________________________________\n");
+                    sb.AppendLine($"Obręb: {dtoFirst.ObrebNr}-{dtoFirst.ObrebNazwa}\tNr JR: {dtoFirst.Ijr}");
 
-                    if (!dtoFirst.Podmioty.SequenceEqual(owners))
-                    {
-                        sb.AppendLine("________________________________________________________________________________________________________________\n");
-                        sb.AppendLine($"{dtoFirst.GetAllAboutUnit()}");
+                    sb.AppendLine($"\tWłaściciele:");
+                    dtoFirst.Podmioty.ForEach(p => sb.AppendLine($"\t\t{p.GetAllAboutOwner()}"));
 
-                        sb.AppendLine("\tBAZA 1:");
-                        dtoFirst.Podmioty.ForEach(x => sb.AppendLine(x.GetAllAboutOwner()));
-                        sb.AppendLine("\n\tBAZA 2:");
-                        owners.ForEach(o => sb.AppendLine(o.GetAllAboutOwner()));
-                    }
+                    sb.AppendLine($"\tDziałki:");
+                    dtoFirst.Dzialki.ForEach(d => sb.AppendLine($"\t\tDz.: {d.NrObrebu}-{d.Idd}\tPow.: {d.Pew}\tKW: {d.Kw}"));
                 }
             }
-
             return sb.ToString();
         }
-
 
         public string GetDifferencesParecels(bool ignoreArea = false, bool ignoreKW = false)
         {
@@ -220,6 +218,32 @@ namespace Porównator_Baz.Services
             return sb.ToString();
         }
 
+        public string GetDifferencesOwner()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var dtoFirst in jednRejDtoFirst)
+            {
+                var existUnit = jednRejDtoSecond.Exists(s => dtoFirst.Equals(s));
+                if (existUnit)
+                {
+                    var owners = jednRejDtoSecond.SingleOrDefault(jednSec => dtoFirst.Equals(jednSec)).Podmioty;
+
+                    if (!dtoFirst.Podmioty.SequenceEqual(owners))
+                    {
+                        sb.AppendLine("________________________________________________________________________________________________________________\n");
+                        sb.AppendLine($"{dtoFirst.GetAllAboutUnit()}");
+
+                        sb.AppendLine("\tBAZA 1:");
+                        dtoFirst.Podmioty.ForEach(x => sb.AppendLine(x.GetAllAboutOwner()));
+                        sb.AppendLine("\n\tBAZA 2:");
+                        owners.ForEach(o => sb.AppendLine(o.GetAllAboutOwner()));
+                    }
+                }
+            }
+
+            return sb.ToString();
+        }
+
         internal string SaveAsTxtAddedUnits()
         {
             StringBuilder sb = new StringBuilder();
@@ -236,6 +260,33 @@ namespace Porównator_Baz.Services
                     sb.AppendLine();
                 }
             }
+            return sb.ToString();
+        }
+
+        public string SaveAsTxtDeletedUnits()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine(string.Join("\t", "Nr jednostki", "Obręb", "Właściciel", "Działka", "Powierzchnia", "KW"));
+            foreach (var dtoFirst in jednRejDtoFirst)
+            {
+                var exist = jednRejDtoSecond.Exists(s => dtoFirst.Equals(s));
+                if (!exist)
+                {
+
+                    //sb.AppendLine($"Obręb: {dtoFirst.ObrebNr}-{dtoFirst.ObrebNazwa}\tNr JR: {dtoFirst.Ijr}");
+                    sb.AppendLine(string.Join("\t", dtoFirst.GetAll('\t'), "", "", "", ""));
+
+                    //sb.AppendLine($"\tWłaściciele:");
+                    //dtoFirst.Podmioty.ForEach(p => sb.AppendLine($"\t\t{p.GetAllAboutOwner()}"));
+                    dtoFirst.Podmioty.ForEach(p => sb.AppendLine(string.Join("\t", "", "", p.GetAll(), "", "", "")));
+
+                    //sb.AppendLine($"\tDziałki:");
+                    dtoFirst.Dzialki.ForEach(d => sb.AppendLine(string.Join("\t", "", "", "", d.GetAll('\t'))));
+                    sb.AppendLine();
+                }
+            }
+
             return sb.ToString();
         }
 
@@ -319,70 +370,27 @@ namespace Porównator_Baz.Services
             return sb.ToString();
         }
 
-        public string SaveAsTxtDeletedUnits()
+        public string SaveAsTxtDifferencesOwner()
         {
             StringBuilder sb = new StringBuilder();
-
-            sb.AppendLine(string.Join("\t", "Nr jednostki", "Obręb", "Właściciel", "Działka", "Powierzchnia", "KW"));
+            sb.AppendLine(string.Join("\t", "Nr jednostki", "Obręb", "Baza", "Właściciel"));
             foreach (var dtoFirst in jednRejDtoFirst)
             {
-                var exist = jednRejDtoSecond.Exists(s => dtoFirst.Equals(s));
-                if (!exist)
+                var existUnit = jednRejDtoSecond.Exists(s => dtoFirst.Equals(s));
+                if (existUnit)
                 {
+                    var owners = jednRejDtoSecond.SingleOrDefault(jednSec => dtoFirst.Equals(jednSec)).Podmioty;
 
-                    //sb.AppendLine($"Obręb: {dtoFirst.ObrebNr}-{dtoFirst.ObrebNazwa}\tNr JR: {dtoFirst.Ijr}");
-                    sb.AppendLine(string.Join("\t", dtoFirst.GetAll('\t'), "", "", "", ""));
+                    if (!dtoFirst.Podmioty.SequenceEqual(owners))
+                    {
+                       
+                        sb.AppendLine(dtoFirst.GetAll('\t'));
 
-                    //sb.AppendLine($"\tWłaściciele:");
-                    //dtoFirst.Podmioty.ForEach(p => sb.AppendLine($"\t\t{p.GetAllAboutOwner()}"));
-                    dtoFirst.Podmioty.ForEach(p => sb.AppendLine(string.Join("\t", "", "", p.GetAll(), "", "", "")));
-
-                    //sb.AppendLine($"\tDziałki:");
-                    dtoFirst.Dzialki.ForEach(d => sb.AppendLine(string.Join("\t", "", "", "", d.GetAll('\t'))));
-                    sb.AppendLine();
-                }
-            }
-
-            return sb.ToString();
-        }
-
-        public string GetRemovedUnits()
-        {
-            StringBuilder sb = new StringBuilder();
-            foreach (var dtoFirst in jednRejDtoFirst)
-            {
-                var exist = jednRejDtoSecond.Exists(s => dtoFirst.Equals(s));
-                if (!exist)
-                {
-                    sb.AppendLine("________________________________________________________________________________________________________________\n");
-                    sb.AppendLine($"Obręb: {dtoFirst.ObrebNr}-{dtoFirst.ObrebNazwa}\tNr JR: {dtoFirst.Ijr}");
-
-                    sb.AppendLine($"\tWłaściciele:");
-                    dtoFirst.Podmioty.ForEach(p => sb.AppendLine($"\t\t{p.GetAllAboutOwner()}"));
-
-                    sb.AppendLine($"\tDziałki:");
-                    dtoFirst.Dzialki.ForEach(d => sb.AppendLine($"\t\tDz.: {d.NrObrebu}-{d.Idd}\tPow.: {d.Pew}\tKW: {d.Kw}"));
-                }
-            }
-            return sb.ToString();
-        }
-
-        public string GetAddedUnits()
-        {
-            StringBuilder sb = new StringBuilder();
-            foreach (var dtoSec in jednRejDtoSecond)
-            {
-                var exist = jednRejDtoFirst.Exists(s => dtoSec.Equals(s));
-                if (!exist)
-                {
-                    sb.AppendLine("________________________________________________________________________________________________________________\n");
-                    sb.AppendLine($"Obręb: {dtoSec.ObrebNr}-{dtoSec.ObrebNazwa}\tNr JR: {dtoSec.Ijr}");
-
-                    sb.AppendLine($"\tWłaściciele:");
-                    dtoSec.Podmioty.ForEach(p => sb.AppendLine($"\t\t{p.GetAllAboutOwner()}"));
-
-                    sb.AppendLine($"\tDziałki:");
-                    dtoSec.Dzialki.ForEach(d => sb.AppendLine($"\t\tDz.: {d.NrObrebu}-{d.Idd}\tPow.: {d.Pew}\tKW: {d.Kw}"));
+                        sb.AppendLine("\t\t\tBAZA 1:");
+                        dtoFirst.Podmioty.ForEach(x => sb.AppendLine("\t\t\t\t" + x.GetAll()));
+                        sb.AppendLine("\t\t\tBAZA 2:");
+                        owners.ForEach(o => sb.AppendLine("\t\t\t\t" + o.GetAll()));
+                    }
                 }
             }
             return sb.ToString();
