@@ -10,7 +10,7 @@ namespace Porównator_Baz.Entities
     {
         [Key]
         [Column("ID_ID")]
-        virtual public int ID { get; set; }
+        public int ID { get; set; }
         public int IJR { get; set; }
 
         [ForeignKey("Obreb")]

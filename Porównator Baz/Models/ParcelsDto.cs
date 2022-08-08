@@ -16,7 +16,7 @@ namespace Porównator_Baz.Models
         {
             Idd = dzialka.IDD.Trim();
             NrObrebu = dzialka.Obreb.ID;
-            Kw = dzialka.KW.Trim();
+            Kw = dzialka.KW == null ? "" : dzialka.KW.Trim();
             Pew = dzialka.PEW;
             Sidd = dzialka.SIDD;
         }

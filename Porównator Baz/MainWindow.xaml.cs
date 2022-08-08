@@ -4,6 +4,7 @@ using Porównator_Baz.Middleware;
 using Porównator_Baz.Services;
 using System;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,7 +18,9 @@ namespace Porównator_Baz
     {
         public MainWindow()
         {
+
             InitializeComponent();
+            windowPorownator.Title += " - v" + Assembly.GetExecutingAssembly().GetName().Version.ToString();
             textBoxPathBase1.Text = Properties.Settings.Default.PathBase1;
             textBoxPathBase2.Text = Properties.Settings.Default.PathBase2;
             textBoxLogin.Text = Properties.Settings.Default.Login;
